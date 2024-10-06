@@ -10,6 +10,8 @@ topPipeImage.src = "top-pipe.png"; // Вкажіть шлях до зображ�
 const bottomPipeImage = new Image(); // Зображення нижньої труби
 bottomPipeImage.src = "bottom-pipe.png"; // Вкажіть шлях до зображення нижньої труби
 
+const jumpSound = document.getElementById("jumpSound");
+
 const bird = {
     x: 50,
     y: 150,
@@ -30,11 +32,15 @@ let gameSpeed = 2; // Початкова швидкість гри
 // Обробка кліку мишкою для стрибка пташки
 document.addEventListener("click", function() {
     bird.velocity = bird.lift;  // Підстрибування при кліку
+    jumpSound.currentTime = 0; // Сбрасываем время воспроизведения
+    jumpSound.play(); // Воспроизводим звук прыжка
 });
 
 // Обробка дотику на екрані (для мобільних пристроїв)
 document.addEventListener("touchstart", function() {
     bird.velocity = bird.lift;  // Підстрибування при дотику
+    jumpSound.currentTime = 0; // Сбрасываем время воспроизведения
+    jumpSound.play(); // Воспроизводим звук прыжка
 });
 
 function drawBird() {
