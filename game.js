@@ -2,16 +2,19 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 const birdImage = new Image();
-birdImage.src = "bird.png"; 
+birdImage.src = "bird.png";
 
 const topPipeImage = new Image();
-topPipeImage.src = "top-pipe.png"; 
+topPipeImage.src = "top-pipe.png";
 
 const bottomPipeImage = new Image();
 bottomPipeImage.src = "bottom-pipe.png";
 
-const jumpSound = document.getElementById("jumpSound"); 
+const jumpSound = document.getElementById("jumpSound");
 
+const usernameInput = document.getElementById("username"); // Поле ввода имени
+
+// Параметры птицы
 const bird = {
     x: 50,
     y: 150,
@@ -29,12 +32,14 @@ let frame = 0;
 let score = 0;
 let gameSpeed = 2;
 
-let highScore = localStorage.getItem('highScore') || 0; // Получаем рекорд из localStorage
+let highScore = localStorage.getItem('highScore') || 0;
+let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || []; // Массив для лидеров
 
+// Обработка кликов мышью и касаний экрана
 document.addEventListener("click", function() {
-    bird.velocity = bird.lift; 
+    bird.velocity = bird.lift;
     jumpSound.currentTime = 0;
-    jumpSound.play(); 
+    jumpSound.play();
 });
 
 document.addEventListener("touchstart", function() {
@@ -91,29 +96,58 @@ function checkCollision() {
         if (bird.x < pipe.x + pipeWidth &&
             bird.x + bird.width > pipe.x &&
             (bird.y < pipe.topHeight || bird.y + bird.height > pipe.bottomY)) {
+            updateLeaderboard(score);
             resetGame();
         }
     });
 }
 
+function updateLeaderboard(currentScore) {
+    const username = usernameInput.value.trim() || "Anonymous"; // Получаем имя пользователя или "Anonymous" по умолчанию
+
+    // Добавляем текущий счет и имя пользователя в массив лидеров
+    leaderboard.push({ name: username, score: currentScore, date: new Date().toLocaleString() });
+
+    // Сортируем лидеров по убыванию очков
+    leaderboard.sort((a, b) => b.score - a.score);
+
+    // Оставляем только топ-5
+    if (leaderboard.length > 5) {
+        leaderboard.pop();
+    }
+
+    // Сохраняем в localStorage
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+}
+
 function resetGame() {
     if (score > highScore) {
-        highScore = score; // Обновляем рекорд
-        localStorage.setItem('highScore', highScore); // Сохраняем рекорд в localStorage
+        highScore = score;
+        localStorage.setItem('highScore', highScore);
     }
     bird.y = 150;
     bird.velocity = 0;
     pipes.length = 0;
     score = 0;
     frame = 0;
-    gameSpeed = 2; 
+    gameSpeed = 2;
 }
 
 function drawScore() {
     ctx.fillStyle = "#000";
     ctx.font = "20px Arial";
-    ctx.fillText("Score: " + score, 10, 20); // Текущий счет
-    ctx.fillText("High Score: " + highScore, 10, 40); // Рекорд
+    ctx.fillText("Score: " + score, 10, 20);
+    ctx.fillText("High Score: " + highScore, 10, 50);
+}
+
+function drawLeaderboard() {
+    ctx.fillStyle = "#000";
+    ctx.font = "16px Arial";
+    ctx.fillText("Leaderboard:", 10, 80);
+
+    leaderboard.forEach((entry, index) => {
+        ctx.fillText(`${index + 1}. ${entry.name}: ${entry.score} - ${entry.date}`, 10, 100 + index * 20);
+    });
 }
 
 function gameLoop() {
@@ -128,6 +162,7 @@ function gameLoop() {
     checkCollision();
 
     drawScore();
+    drawLeaderboard(); // Отрисовка доски лидеров
 
     frame++;
 
@@ -142,7 +177,7 @@ let imagesLoaded = 0;
 
 function checkAllImagesLoaded() {
     imagesLoaded++;
-    if (imagesLoaded === 3) { 
+    if (imagesLoaded === 3) {
         gameLoop();
     }
 }
