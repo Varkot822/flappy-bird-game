@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Bird Game</title>
+    <title>Flappy Bird</title>
     <style>
-        #gameCanvas {
-            border: 1px solid black;
-        }
-        #startScreen {
-            display: none;
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: #70c5ce;
         }
     </style>
 </head>
 <body>
-    <div id="startScreen">
-        <input type="text" id="username" placeholder="Enter your name" />
-        <button id="startGameButton">Start Game</button>
-    </div>
-    <canvas id="gameCanvas" width="400" height="600"></canvas>
-    <audio id="jumpSound" src="jump.mp3"></audio>
-    <script src="game.js"></script>
+
+<canvas id="gameCanvas" width="320" height="480"></canvas>
+
+<!-- Звук прыжка -->
+<audio id="jumpSound" src="jump.mp3" preload="auto"></audio>
+
+<script src="script.js"></script>
+
 </body>
 </html>
