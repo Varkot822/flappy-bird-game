@@ -18,7 +18,7 @@ const bird = {
     width: 30,
     height: 30,
     gravity: 0.6,
-    lift: -8,  // Сила стрибка
+    lift: -7,  // Сила стрибка
     velocity: 0
 };
 
