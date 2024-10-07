@@ -1,16 +1,16 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-const birdImage = new Image(); // Зображення пташки
-birdImage.src = "bird.png"; // Вкажіть шлях до зображення пташки
+const birdImage = new Image();
+birdImage.src = "bird.png"; 
 
-const topPipeImage = new Image(); // Зображення верхньої труби
-topPipeImage.src = "top-pipe.png"; // Вкажіть шлях до зображення верхньої труби
+const topPipeImage = new Image();
+topPipeImage.src = "top-pipe.png"; 
 
-const bottomPipeImage = new Image(); // Зображення нижньої труби
-bottomPipeImage.src = "bottom-pipe.png"; // Вкажіть шлях до зображення нижньої труби
+const bottomPipeImage = new Image();
+bottomPipeImage.src = "bottom-pipe.png";
 
-const jumpSound = document.getElementById("jumpSound");
+const jumpSound = document.getElementById("jumpSound"); 
 
 const bird = {
     x: 50,
@@ -18,7 +18,7 @@ const bird = {
     width: 30,
     height: 30,
     gravity: 0.6,
-    lift: -8,  // Сила стрибка
+    lift: -8,
     velocity: 0
 };
 
@@ -27,20 +27,20 @@ const pipeWidth = 60;
 const pipeGap = 150;
 let frame = 0;
 let score = 0;
-let gameSpeed = 1.5; // Початкова швидкість гри
+let gameSpeed = 2;
 
-// Обробка кліку мишкою для стрибка пташки
+let highScore = localStorage.getItem('highScore') || 0; // Получаем рекорд из localStorage
+
 document.addEventListener("click", function() {
-    bird.velocity = bird.lift;  // Підстрибування при кліку
-    jumpSound.currentTime = 0; // Сбрасываем время воспроизведения
-    jumpSound.play(); // Воспроизводим звук прыжка
+    bird.velocity = bird.lift; 
+    jumpSound.currentTime = 0;
+    jumpSound.play(); 
 });
 
-// Обробка дотику на екрані (для мобільних пристроїв)
 document.addEventListener("touchstart", function() {
-    bird.velocity = bird.lift;  // Підстрибування при дотику
-    jumpSound.currentTime = 0; // Сбрасываем время воспроизведения
-    jumpSound.play(); // Воспроизводим звук прыжка
+    bird.velocity = bird.lift;
+    jumpSound.currentTime = 0;
+    jumpSound.play();
 });
 
 function drawBird() {
@@ -70,7 +70,7 @@ function createPipes() {
         });
     }
     pipes.forEach((pipe, index) => {
-        pipe.x -= gameSpeed;  // Рух труб залежить від gameSpeed
+        pipe.x -= gameSpeed;
 
         if (pipe.x + pipeWidth < 0) {
             pipes.splice(index, 1);
@@ -81,9 +81,7 @@ function createPipes() {
 
 function drawPipes() {
     pipes.forEach(pipe => {
-        // Малюємо верхню трубу
         ctx.drawImage(topPipeImage, pipe.x, 0, pipeWidth, pipe.topHeight);
-        // Малюємо нижню трубу
         ctx.drawImage(bottomPipeImage, pipe.x, pipe.bottomY, pipeWidth, canvas.height - pipe.bottomY);
     });
 }
@@ -99,18 +97,23 @@ function checkCollision() {
 }
 
 function resetGame() {
+    if (score > highScore) {
+        highScore = score; // Обновляем рекорд
+        localStorage.setItem('highScore', highScore); // Сохраняем рекорд в localStorage
+    }
     bird.y = 150;
     bird.velocity = 0;
     pipes.length = 0;
     score = 0;
     frame = 0;
-    gameSpeed = 1.5; // Скидаємо швидкість при перезапуску
+    gameSpeed = 2; 
 }
 
 function drawScore() {
     ctx.fillStyle = "#000";
     ctx.font = "20px Arial";
-    ctx.fillText("Score: " + score, 10, 20);
+    ctx.fillText("Score: " + score, 10, 20); // Текущий счет
+    ctx.fillText("High Score: " + highScore, 10, 50); // Рекорд
 }
 
 function gameLoop() {
@@ -128,20 +131,18 @@ function gameLoop() {
 
     frame++;
 
-    // Плавне збільшення швидкості з часом
-    if (frame % 120 === 0) {  // Наприклад, кожні 2 секунди збільшується швидкість
+    if (frame % 120 === 0) {
         gameSpeed += 0.1;
     }
 
     requestAnimationFrame(gameLoop);
 }
 
-// Запуск гри після завантаження всіх зображень
 let imagesLoaded = 0;
 
 function checkAllImagesLoaded() {
     imagesLoaded++;
-    if (imagesLoaded === 3) { // Чекаємо, поки всі три зображення завантажаться
+    if (imagesLoaded === 3) { 
         gameLoop();
     }
 }
