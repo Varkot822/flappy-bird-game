@@ -11,8 +11,6 @@ topPipeImage.src = "top-pipe.png"; // Замените на путь к изоб
 const bottomPipeImage = new Image();
 bottomPipeImage.src = "bottom-pipe.png"; // Замените на путь к изображению нижней трубы
 
-const jumpSound = document.getElementById("jumpSound"); // Звук прыжка
-
 // Определяем объект птицы
 const bird = {
     x: 50,
