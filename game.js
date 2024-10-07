@@ -1,17 +1,20 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-// Загружаем изображения
 const birdImage = new Image();
-birdImage.src = "bird.png"; // Замените на путь к изображению птицы
+birdImage.src = "bird.png";
 
 const topPipeImage = new Image();
-topPipeImage.src = "top-pipe.png"; // Замените на путь к изображению верхней трубы
+topPipeImage.src = "top-pipe.png";
 
 const bottomPipeImage = new Image();
-bottomPipeImage.src = "bottom-pipe.png"; // Замените на путь к изображению нижней трубы
+bottomPipeImage.src = "bottom-pipe.png";
 
-// Определяем объект птицы
+const jumpSound = document.getElementById("jumpSound");
+
+const usernameInput = document.getElementById("username"); // Поле ввода имени
+
+// Параметры птицы
 const bird = {
     x: 50,
     y: 150,
@@ -29,31 +32,30 @@ let frame = 0;
 let score = 0;
 let gameSpeed = 2;
 
-// Обработка клика мыши для прыжка птицы
+let highScore = localStorage.getItem('highScore') || 0;
+let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || []; // Массив для лидеров
+
+// Обработка кликов мышью и касаний экрана
 document.addEventListener("click", function() {
-    bird.velocity = bird.lift; // Птица подскакивает при клике
-    jumpSound.currentTime = 0; // Сбрасываем время воспроизведения
-    jumpSound.play(); // Воспроизводим звук прыжка
+    bird.velocity = bird.lift;
+    jumpSound.currentTime = 0;
+    jumpSound.play();
 });
 
-// Обработка касания на экране (для мобильных устройств)
 document.addEventListener("touchstart", function() {
-    bird.velocity = bird.lift; // Птица подскакивает при касании
-    jumpSound.currentTime = 0; // Сбрасываем время воспроизведения
-    jumpSound.play(); // Воспроизводим звук прыжка
+    bird.velocity = bird.lift;
+    jumpSound.currentTime = 0;
+    jumpSound.play();
 });
 
-// Функция для отрисовки птицы
 function drawBird() {
     ctx.drawImage(birdImage, bird.x, bird.y, bird.width, bird.height);
 }
 
-// Функция для обновления состояния птицы
 function updateBird() {
     bird.velocity += bird.gravity;
     bird.y += bird.velocity;
 
-    // Проверка на столкновение с нижней частью экрана
     if (bird.y + bird.height > canvas.height) {
         bird.y = canvas.height - bird.height;
         bird.velocity = 0;
@@ -63,7 +65,6 @@ function updateBird() {
     }
 }
 
-// Функция для создания труб
 function createPipes() {
     if (frame % 90 === 0) {
         const pipeHeight = Math.floor(Math.random() * (canvas.height - pipeGap));
@@ -76,7 +77,6 @@ function createPipes() {
     pipes.forEach((pipe, index) => {
         pipe.x -= gameSpeed;
 
-        // Удаляем трубы, которые вышли за пределы
         if (pipe.x + pipeWidth < 0) {
             pipes.splice(index, 1);
             score++;
@@ -84,45 +84,72 @@ function createPipes() {
     });
 }
 
-// Функция для отрисовки труб
 function drawPipes() {
     pipes.forEach(pipe => {
-        // Рисуем верхнюю трубу
         ctx.drawImage(topPipeImage, pipe.x, 0, pipeWidth, pipe.topHeight);
-        // Рисуем нижнюю трубу
         ctx.drawImage(bottomPipeImage, pipe.x, pipe.bottomY, pipeWidth, canvas.height - pipe.bottomY);
     });
 }
 
-// Функция для проверки столкновений
 function checkCollision() {
     pipes.forEach(pipe => {
         if (bird.x < pipe.x + pipeWidth &&
             bird.x + bird.width > pipe.x &&
             (bird.y < pipe.topHeight || bird.y + bird.height > pipe.bottomY)) {
-            resetGame(); // Если произошло столкновение, перезапускаем игру
+            updateLeaderboard(score);
+            resetGame();
         }
     });
 }
 
-// Функция для перезапуска игры
+function updateLeaderboard(currentScore) {
+    const username = usernameInput.value.trim() || "Anonymous"; // Получаем имя пользователя или "Anonymous" по умолчанию
+
+    // Добавляем текущий счет и имя пользователя в массив лидеров
+    leaderboard.push({ name: username, score: currentScore, date: new Date().toLocaleString() });
+
+    // Сортируем лидеров по убыванию очков
+    leaderboard.sort((a, b) => b.score - a.score);
+
+    // Оставляем только топ-5
+    if (leaderboard.length > 5) {
+        leaderboard.pop();
+    }
+
+    // Сохраняем в localStorage
+    localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+}
+
 function resetGame() {
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('highScore', highScore);
+    }
     bird.y = 150;
     bird.velocity = 0;
     pipes.length = 0;
     score = 0;
     frame = 0;
-    gameSpeed = 2; // Сбрасываем скорость при перезапуске
+    gameSpeed = 2;
 }
 
-// Функция для отрисовки счета
 function drawScore() {
     ctx.fillStyle = "#000";
     ctx.font = "20px Arial";
     ctx.fillText("Score: " + score, 10, 20);
+    ctx.fillText("High Score: " + highScore, 10, 50);
 }
 
-// Основной игровой цикл
+function drawLeaderboard() {
+    ctx.fillStyle = "#000";
+    ctx.font = "16px Arial";
+    ctx.fillText("Leaderboard:", 10, 80);
+
+    leaderboard.forEach((entry, index) => {
+        ctx.fillText(`${index + 1}. ${entry.name}: ${entry.score} - ${entry.date}`, 10, 100 + index * 20);
+    });
+}
+
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -135,23 +162,22 @@ function gameLoop() {
     checkCollision();
 
     drawScore();
+    drawLeaderboard(); // Отрисовка доски лидеров
 
     frame++;
 
-    // Плавное увеличение скорости со временем
     if (frame % 120 === 0) {
-        gameSpeed += 0.1; // Увеличиваем скорость каждые 2 секунды
+        gameSpeed += 0.1;
     }
 
     requestAnimationFrame(gameLoop);
 }
 
-// Запускаем игру после загрузки всех изображений
 let imagesLoaded = 0;
 
 function checkAllImagesLoaded() {
     imagesLoaded++;
-    if (imagesLoaded === 3) { // Ждем, пока все три изображения загрузятся
+    if (imagesLoaded === 3) {
         gameLoop();
     }
 }
