@@ -113,7 +113,7 @@ function drawScore() {
     ctx.fillStyle = "#000";
     ctx.font = "20px Arial";
     ctx.fillText("Score: " + score, 10, 20); // Текущий счет
-    ctx.fillText("High Score: " + highScore, 10, 50); // Рекорд
+    ctx.fillText("High Score: " + highScore, 10, 40); // Рекорд
 }
 
 function gameLoop() {
