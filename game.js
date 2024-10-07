@@ -18,7 +18,7 @@ const bird = {
     width: 30,
     height: 30,
     gravity: 0.6,
-    lift: -3,  // Сила стрибка
+    lift: -8,  // Сила стрибка
     velocity: 0
 };
 
@@ -27,7 +27,7 @@ const pipeWidth = 60;
 const pipeGap = 150;
 let frame = 0;
 let score = 0;
-let gameSpeed = 1; // Початкова швидкість гри
+let gameSpeed = 1.5; // Початкова швидкість гри
 
 // Обробка кліку мишкою для стрибка пташки
 document.addEventListener("click", function() {
@@ -104,7 +104,7 @@ function resetGame() {
     pipes.length = 0;
     score = 0;
     frame = 0;
-    gameSpeed = 1; // Скидаємо швидкість при перезапуску
+    gameSpeed = 1.5; // Скидаємо швидкість при перезапуску
 }
 
 function drawScore() {
