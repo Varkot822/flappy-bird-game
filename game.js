@@ -106,7 +106,7 @@ function updateLeaderboard(currentScore) {
     const username = usernameInput.value.trim() || "Anonymous"; // Получаем имя пользователя или "Anonymous" по умолчанию
 
     // Добавляем текущий счет и имя пользователя в массив лидеров
-    leaderboard.push({ name: username, score: currentScore, date: new Date().toLocaleString() });
+    leaderboard.push({ name: username, score: currentScore });
 
     // Сортируем лидеров по убыванию очков
     leaderboard.sort((a, b) => b.score - a.score);
@@ -146,7 +146,7 @@ function drawLeaderboard() {
     ctx.fillText("Leaderboard:", 10, 80);
 
     leaderboard.forEach((entry, index) => {
-        ctx.fillText(`${index + 1}. ${entry.name}: ${entry.score} - ${entry.date}`, 10, 100 + index * 20);
+        ctx.fillText(`${index + 1}. ${entry.name}: ${entry.score}`, 10, 100 + index * 20);
     });
 }
 
