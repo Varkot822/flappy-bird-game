@@ -30,7 +30,7 @@ const pipeWidth = 60;
 const pipeGap = 150;
 let frame = 0;
 let score = 0;
-let gameSpeed = 2;
+let gameSpeed = 1.5;
 
 let highScore = localStorage.getItem('highScore') || 0;
 let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || []; // Массив для лидеров
@@ -130,7 +130,7 @@ function resetGame() {
     pipes.length = 0;
     score = 0;
     frame = 0;
-    gameSpeed = 2;
+    gameSpeed = 1.5;
 }
 
 function drawScore() {
