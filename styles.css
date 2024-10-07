@@ -1,14 +1,52 @@
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
+* {
     margin: 0;
-    background-color: #e0e0e0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-h1 {
+body {
     font-family: Arial, sans-serif;
+    background-color: #f0f8ff; /* Нежный синий цвет фона */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#gameContainer {
+    text-align: center;
+    background-color: #fff; /* Белый фон для контейнера */
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Легкая тень для контейнера */
+    border-radius: 10px; /* Скругленные углы контейнера */
+}
+
+#username {
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 16px;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+canvas {
+    display: block;
+    margin: 0 auto;
+    background-color: #70c5ce; /* Нежно-голубой фон для игры */
+    border: 2px solid #000; /* Черная рамка вокруг холста */
+    border-radius: 10px; /* Скругленные углы холста */
+}
+
+#gameContainer label {
+    font-size: 18px;
+    margin-bottom: 5px;
+    display: block;
     color: #333;
 }
+
+audio {
+    display: none; /* Скрываем элемент аудио, так как он будет использоваться только для звука прыжка */
+}
+
